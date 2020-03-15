@@ -17,14 +17,14 @@ class TestController(@Autowired val testRepository: TestRepository) {
     @PostMapping("/{testId}/pair")
     fun postPair(@PathVariable testId: String, @RequestBody pairEvent: TestPairEvent): String {
         log.info(">>>> postPairEvent($pairEvent)")
-        val testEntity = TestEntity(testId, pairEvent.personId, LabResult.UNKNOWN)
+        val testEntity = TestEntity(testId, pairEvent.personId, LabResult.IN_PROGRESS)
         testRepository.save(testEntity)
         return "OK"
     }
 
     @GetMapping("/{testId}/result")
-    fun getResult(@PathVariable testId: String): LabResult? {
-        return testRepository.findByIdOrNull(testId)?.labResult
+    fun getResult(@PathVariable testId: String): LabResult {
+        return testRepository.findByIdOrNull(testId)?.labResult ?: LabResult.UNKNOWN
     }
 
     @PostMapping("/{testId}/result")
