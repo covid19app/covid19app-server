@@ -39,5 +39,5 @@ data class PersonSymptomsEvent(
         val diarrhoea: Float,
         val haemoptysis: Float,
         val conjunctivalCongestion: Float,
-        val other: Map<String, Float>
+        val other: Map<String, Float> = emptyMap()
 )

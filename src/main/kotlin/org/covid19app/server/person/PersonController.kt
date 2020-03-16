@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 // TODO: Publish all events to kafka for later use!
 
+@CrossOrigin
 @RestController
 @RequestMapping("/v1/person")
 class PersonController(@Autowired val profileRepository: ProfileRepository) {
