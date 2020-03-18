@@ -15,17 +15,16 @@ import java.time.LocalDate
 //@org.springframework.test.context.ActiveProfiles("test_mysql")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
+
     @Test
     fun getPerson() {
         val personId = freshId("person")
-        val deviceId = freshId("device")
 
         val notRegisteredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
         assertThat(notRegisteredResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(notRegisteredResponse.body).isEqualTo("\"NOT REGISTERED\"")
 
-        val eventInfo = freshEventInfo(personId, deviceId)
-        val profileEvent = PersonProfileEvent(eventInfo, 42, Sex.NON_BINARY, "John Doe", false)
+        val profileEvent = PersonProfileEvent(freshEventInfo(), personId, "John Doe", 42, Sex.NON_BINARY, false)
         restTemplate.put("/v1/person/$personId/profile", profileEvent)
 
         val registeredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
@@ -35,27 +34,24 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun putProfile() {
-        val eventInfo = freshEventInfo()
-        val profileEvent = PersonProfileEvent(eventInfo, 42, Sex.NON_BINARY, "John Doe", false)
-        restTemplate.put("/v1/person/${eventInfo.personId}/profile", profileEvent)
+        val personId = freshId("person")
+        val profileEvent = PersonProfileEvent(freshEventInfo(), personId, "John Doe", 42, Sex.NON_BINARY, false)
+        restTemplate.put("/v1/person/$personId/profile", profileEvent)
     }
 
     @Test
     fun putTravelHistory() {
-        val eventInfo = freshEventInfo()
-        val travelHistoryEvent = PersonTravelHistoryEvent(eventInfo,
-                "China", listOf("Wuhan", "Peking"), LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-31"))
-        restTemplate.put("/v1/person/${eventInfo.personId}/travelHistory", travelHistoryEvent)
+        val personId = freshId("person")
+        val travelHistoryEvent = PersonTravelHistoryEvent(freshEventInfo(), personId, "China", listOf("Wuhan"),
+                LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-31"))
+        restTemplate.put("/v1/person/$personId/travelHistory", travelHistoryEvent)
     }
 
     @Test
     fun postSymptoms() {
-        val eventInfo = freshEventInfo()
-        val personId = eventInfo.personId
-        val emptySymptomsEvent = PersonSymptomsEvent(eventInfo, 0.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                emptyMap())
+        val personId = freshId("person")
+        val emptySymptomsEvent = PersonSymptomsEvent(freshEventInfo(), personId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, emptyMap())
 
         val goodSymptomsEvent = emptySymptomsEvent.copy(feverInCelsius = 37.0f)
         val goodResponse = restTemplate.postForEntity<NextSteps>("/v1/person/$personId/symptoms", goodSymptomsEvent)

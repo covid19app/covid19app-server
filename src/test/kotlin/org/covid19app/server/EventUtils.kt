@@ -10,14 +10,10 @@ fun freshId(prefix: String): String {
     return "${prefix}${idCounter.incrementAndGet()}"
 }
 
-fun freshEventInfo(personId: String, deviceId: String): EventInfo {
-    return EventInfo(freshId("event"), personId, deviceId, Instant.now().epochSecond)
+fun freshEventInfo(deviceId: String): EventInfo {
+    return EventInfo(freshId("event"), deviceId, Instant.now().epochSecond)
 }
 
 fun freshEventInfo(): EventInfo {
-    return freshEventInfo(freshId("person"), freshId("device"))
-}
-
-fun freshEventInfo(eventInfo: EventInfo): EventInfo {
-    return freshEventInfo(eventInfo.personId, eventInfo.deviceId)
+    return freshEventInfo(freshId("device"))
 }

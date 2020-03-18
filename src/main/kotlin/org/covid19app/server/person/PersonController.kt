@@ -25,24 +25,30 @@ class PersonController(@Autowired val profileRepository: ProfileRepository) {
     @PutMapping("/{personId}/profile")
     fun putProfile(@PathVariable personId: String, @RequestBody profileEvent: PersonProfileEvent) {
         log.info(">>>> putProfile($profileEvent)")
+//        assert(personId == profileEvent.personId)
         val profileEntity = ProfileEntity(
-                personId, profileEvent.age, profileEvent.sex, profileEvent.name, profileEvent.deleted)
+                profileEvent.personId, profileEvent.age, profileEvent.sex, profileEvent.name, profileEvent.deleted)
         profileRepository.save(profileEntity)
     }
 
     @PutMapping("/{personId}/travelHistory")
     fun putTravelHistory(@PathVariable personId: String, @RequestBody travelHistoryEvent: PersonTravelHistoryEvent) {
         log.info(">>>> putTravelHistory($travelHistoryEvent)")
+//        assert(personId == travelHistoryEvent.personId)
     }
 
     @PostMapping("/{personId}/symptoms")
     fun postSymptoms(@PathVariable personId: String, @RequestBody symptomsEvent: PersonSymptomsEvent): NextSteps {
         log.info(">>>> postSymptoms($symptomsEvent)")
+//        assert(personId == symptomsEvent.personId)
         return if (symptomsEvent.feverInCelsius > 37.5) {
-            val labHref = "https://www.google.com/maps/search/?api=1&query=hospital"
-            NextSteps(Action.GET_TESTED, "<a href=\"$labHref\">Go to nearest lab please!</a>")
+            val link = "https://www.google.com/maps/search/?api=1&query=hospital"
+            val html = "<a style=\"font-size: 40px;\" href=\"$link\">Go to nearest lab please!</a>"
+            NextSteps(Action.GET_TESTED, html, link)
         } else {
-            NextSteps(Action.STAY_HEALTHY, "There is no reason to be worried. Go on with your life but be careful!")
+            val text = "There is no reason to be worried. Go on with your life. But please be careful!"
+            val html = "<p style=\"font-size: 40px;\">$text</p>"
+            NextSteps(Action.STAY_HEALTHY, html, null)
         }
     }
 }

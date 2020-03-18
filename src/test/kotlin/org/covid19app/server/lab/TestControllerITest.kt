@@ -13,25 +13,21 @@ import org.springframework.http.HttpStatus
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TestControllerITest(@Autowired val restTemplate: TestRestTemplate) {
-    val labPersonId = freshId("person")
-    val labDeviceId = freshId("device")
-
     @Test
     fun `lab testing life cycle - pairing and result submission`() {
-        val eventInfo = freshEventInfo(labPersonId, labDeviceId)
-        val patientPersonId = freshId("patient")
+        val personId = freshId("patient")
         val testId = freshId("test")
 
         val notPairedResponse = restTemplate.getForEntity<LabResult>("/v1/test/$testId/result")
         assertThat(notPairedResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(notPairedResponse.body).isEqualTo(LabResult.UNKNOWN)
 
-        val pairEvent = TestPairEvent(eventInfo, testId, patientPersonId)
+        val pairEvent = TestPairEvent(freshEventInfo(), testId, personId)
         val pairEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/pair", pairEvent)
         assertThat(pairEventResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(pairEventResponse.body).isEqualTo("OK")
 
-        val resultEvent = TestResultEvent(eventInfo, testId, LabResult.INFECTED)
+        val resultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
         val resultEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/result", resultEvent)
         assertThat(resultEventResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(resultEventResponse.body).isEqualTo("OK")
@@ -43,10 +39,8 @@ class TestControllerITest(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun postResult() {
-        val eventInfo = freshEventInfo(labPersonId, labDeviceId)
         val testId = freshId("test")
-
-        val resultEvent = TestResultEvent(eventInfo, testId, LabResult.INFECTED)
+        val resultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
         val response = restTemplate.postForEntity<String>("/v1/test/$testId/result", resultEvent)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).containsIgnoringCase("ERROR")

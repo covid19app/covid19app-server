@@ -5,14 +5,16 @@ import java.time.LocalDate
 
 data class PersonProfileEvent(
         val eventInfo: EventInfo,
+        val personId: String,
+        val name: String,
         val age: Int,
         val sex: Sex,
-        val name: String,
         val deleted: Boolean
 )
 
 data class PersonTravelHistoryEvent(
         val eventInfo: EventInfo,
+        val personId: String,
         val country: String,
         val places: List<String>,
         val startDate: LocalDate,
@@ -25,6 +27,7 @@ data class PersonTravelHistoryEvent(
 // has to respect local system and show fahrenheit where appropriate. Just convert it to celsius before sending over.
 data class PersonSymptomsEvent(
         val eventInfo: EventInfo,
+        val personId: String,
         val feverInCelsius: Float,
         val dryCough: Float,
         val fatigue: Float,
