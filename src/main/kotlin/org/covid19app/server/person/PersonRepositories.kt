@@ -5,13 +5,14 @@ import javax.persistence.Entity
 import javax.persistence.Id
 
 @Entity
-data class ProfileEntity(
+data class PersonEntity(
         @Id
         val personId: String,
+        val deviceId: String,
         val age: Int,
         val sex: Sex,
         val name: String,
         val deleted: Boolean
 )
 
-interface ProfileRepository : JpaRepository<ProfileEntity, String>
+interface PersonRepository : JpaRepository<PersonEntity, String>

@@ -1,5 +1,6 @@
 package org.covid19app.server.person
 
+import org.covid19app.server.common.RegistrationStatus
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -9,39 +10,41 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin
 @RestController
 @RequestMapping("/v1/person")
-class PersonController(@Autowired val profileRepository: ProfileRepository) {
+class PersonController(@Autowired val personRepository: PersonRepository) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)
     }
 
     @GetMapping("/{personId}")
-    fun getPerson(@PathVariable personId: String): String {
-        return when (profileRepository.existsById(personId)) {
-            true -> "\"REGISTERED\""
-            false -> "\"NOT REGISTERED\""
+    fun getPerson(@PathVariable personId: String): RegistrationStatus {
+        return when (personRepository.existsById(personId)) {
+            true -> RegistrationStatus.REGISTERED
+            false -> RegistrationStatus.NOT_REGISTERED
         }
     }
 
     @PutMapping("/{personId}/profile")
-    fun putProfile(@PathVariable personId: String, @RequestBody profileEvent: PersonProfileEvent) {
-        log.info(">>>> putProfile($profileEvent)")
-//        assert(personId == profileEvent.personId)
-        val profileEntity = ProfileEntity(
-                profileEvent.personId, profileEvent.age, profileEvent.sex, profileEvent.name, profileEvent.deleted)
-        profileRepository.save(profileEntity)
+    fun putPersonProfile(@PathVariable personId: String, @RequestBody personProfileEvent: PersonProfileEvent) {
+        log.info(">>>> putPersonProfile($personProfileEvent)")
+//        assert(personId == personProfileEvent.personId)
+        val profileEntity = PersonEntity(personProfileEvent.personId, personProfileEvent.eventInfo.deviceId,
+                personProfileEvent.age, personProfileEvent.sex, personProfileEvent.name, personProfileEvent.deleted)
+        personRepository.save(profileEntity)
     }
 
     @PutMapping("/{personId}/travelHistory")
-    fun putTravelHistory(@PathVariable personId: String, @RequestBody travelHistoryEvent: PersonTravelHistoryEvent) {
-        log.info(">>>> putTravelHistory($travelHistoryEvent)")
-//        assert(personId == travelHistoryEvent.personId)
+    fun putPersonTravelHistory(
+            @PathVariable personId: String, @RequestBody personTravelHistoryEvent: PersonTravelHistoryEvent) {
+        log.info(">>>> putPersonTravelHistory($personTravelHistoryEvent)")
+//        assert(personId == personTravelHistoryEvent.personId)
     }
 
     @PostMapping("/{personId}/symptoms")
-    fun postSymptoms(@PathVariable personId: String, @RequestBody symptomsEvent: PersonSymptomsEvent): NextSteps {
-        log.info(">>>> postSymptoms($symptomsEvent)")
-//        assert(personId == symptomsEvent.personId)
-        return if (symptomsEvent.feverInCelsius > 37.5) {
+    fun postPersonSymptoms(
+            @PathVariable personId: String, @RequestBody personSymptomsEvent: PersonSymptomsEvent): NextSteps {
+        log.info(">>>> postPersonSymptoms($personSymptomsEvent)")
+//        assert(personId == personSymptomsEvent.personId)
+        return if (personSymptomsEvent.feverInCelsius > 37.5) {
             val link = "https://www.google.com/maps/search/?api=1&query=hospital"
             val html = "<a style=\"font-size: 40px;\" href=\"$link\">Go to nearest lab please!</a>"
             NextSteps(Action.GET_TESTED, html, link)

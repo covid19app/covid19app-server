@@ -22,10 +22,11 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
 
         val notRegisteredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
         assertThat(notRegisteredResponse.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(notRegisteredResponse.body).isEqualTo("\"NOT REGISTERED\"")
+        assertThat(notRegisteredResponse.body).isEqualTo("\"NOT_REGISTERED\"")
 
-        val profileEvent = PersonProfileEvent(freshEventInfo(), personId, "John Doe", 42, Sex.NON_BINARY, false)
-        restTemplate.put("/v1/person/$personId/profile", profileEvent)
+        val personProfileEvent = PersonProfileEvent(freshEventInfo(),
+                personId, "John Doe", 42, Sex.NON_BINARY, false)
+        restTemplate.put("/v1/person/$personId/profile", personProfileEvent)
 
         val registeredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
         assertThat(registeredResponse.statusCode).isEqualTo(HttpStatus.OK)
@@ -33,32 +34,33 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
-    fun putProfile() {
+    fun putPersonProfile() {
         val personId = freshId("person")
-        val profileEvent = PersonProfileEvent(freshEventInfo(), personId, "John Doe", 42, Sex.NON_BINARY, false)
-        restTemplate.put("/v1/person/$personId/profile", profileEvent)
+        val personProfileEvent = PersonProfileEvent(freshEventInfo(),
+                personId, "John Doe", 42, Sex.NON_BINARY, false)
+        restTemplate.put("/v1/person/$personId/profile", personProfileEvent)
     }
 
     @Test
-    fun putTravelHistory() {
+    fun putPersonTravelHistory() {
         val personId = freshId("person")
-        val travelHistoryEvent = PersonTravelHistoryEvent(freshEventInfo(), personId, "China", listOf("Wuhan"),
-                LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-31"))
-        restTemplate.put("/v1/person/$personId/travelHistory", travelHistoryEvent)
+        val personTravelHistoryEvent = PersonTravelHistoryEvent(freshEventInfo(), personId, "China",
+                listOf("Wuhan"), LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-31"))
+        restTemplate.put("/v1/person/$personId/travelHistory", personTravelHistoryEvent)
     }
 
     @Test
-    fun postSymptoms() {
+    fun postPersonSymptoms() {
         val personId = freshId("person")
-        val emptySymptomsEvent = PersonSymptomsEvent(freshEventInfo(), personId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, emptyMap())
+        val emptyPersonSymptomsEvent = PersonSymptomsEvent(freshEventInfo(), personId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, emptyMap())
 
-        val goodSymptomsEvent = emptySymptomsEvent.copy(feverInCelsius = 37.0f)
+        val goodSymptomsEvent = emptyPersonSymptomsEvent.copy(feverInCelsius = 37.0f)
         val goodResponse = restTemplate.postForEntity<NextSteps>("/v1/person/$personId/symptoms", goodSymptomsEvent)
         assertThat(goodResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(goodResponse.body?.action).isEqualTo(Action.STAY_HEALTHY)
 
-        val badSymptomsEvent = emptySymptomsEvent.copy(feverInCelsius = 38.0f)
+        val badSymptomsEvent = emptyPersonSymptomsEvent.copy(feverInCelsius = 38.0f)
         val badResponse = restTemplate.postForEntity<NextSteps>("/v1/person/$personId/symptoms", badSymptomsEvent)
         assertThat(badResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(badResponse.body?.action).isEqualTo(Action.GET_TESTED)

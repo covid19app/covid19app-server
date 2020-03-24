@@ -18,30 +18,30 @@ class TestControllerITest(@Autowired val restTemplate: TestRestTemplate) {
         val personId = freshId("patient")
         val testId = freshId("test")
 
-        val notPairedResponse = restTemplate.getForEntity<LabResult>("/v1/test/$testId/result")
+        val notPairedResponse = restTemplate.getForEntity<LabResult>("/v1/test/$testId")
         assertThat(notPairedResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(notPairedResponse.body).isEqualTo(LabResult.UNKNOWN)
 
-        val pairEvent = TestPairEvent(freshEventInfo(), testId, personId)
-        val pairEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/pair", pairEvent)
-        assertThat(pairEventResponse.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(pairEventResponse.body).isEqualTo("OK")
+        val testPairEvent = TestPairEvent(freshEventInfo(), testId, personId)
+        val testPairEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/pair", testPairEvent)
+        assertThat(testPairEventResponse.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(testPairEventResponse.body).isEqualTo("\"OK\"")
 
-        val resultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
-        val resultEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/result", resultEvent)
-        assertThat(resultEventResponse.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(resultEventResponse.body).isEqualTo("OK")
+        val testResultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
+        val testResultEventResponse = restTemplate.postForEntity<String>("/v1/test/$testId/result", testResultEvent)
+        assertThat(testResultEventResponse.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(testResultEventResponse.body).isEqualTo("\"OK\"")
 
-        val pairedResponse = restTemplate.getForEntity<LabResult>("/v1/test/$testId/result")
+        val pairedResponse = restTemplate.getForEntity<LabResult>("/v1/test/$testId")
         assertThat(pairedResponse.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(pairedResponse.body).isEqualTo(LabResult.INFECTED)
     }
 
     @Test
-    fun postResult() {
+    fun postTestResult() {
         val testId = freshId("test")
-        val resultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
-        val response = restTemplate.postForEntity<String>("/v1/test/$testId/result", resultEvent)
+        val testResultEvent = TestResultEvent(freshEventInfo(), testId, LabResult.INFECTED)
+        val response = restTemplate.postForEntity<String>("/v1/test/$testId/result", testResultEvent)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).containsIgnoringCase("ERROR")
     }

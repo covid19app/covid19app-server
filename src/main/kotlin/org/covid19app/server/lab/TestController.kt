@@ -15,28 +15,28 @@ class TestController(@Autowired val testRepository: TestRepository) {
         val log = LoggerFactory.getLogger(this::class.java)
     }
 
-    @PostMapping("/{testId}/pair")
-    fun postPair(@PathVariable testId: String, @RequestBody pairEvent: TestPairEvent): String {
-        log.info(">>>> postPairEvent($pairEvent)")
-        val testEntity = TestEntity(testId, pairEvent.personId, LabResult.IN_PROGRESS)
-        testRepository.save(testEntity)
-        return "OK"
-    }
-
-    @GetMapping("/{testId}/result")
-    fun getResult(@PathVariable testId: String): LabResult {
+    @GetMapping("/{testId}")
+    fun getTest(@PathVariable testId: String): LabResult {
         return testRepository.findByIdOrNull(testId)?.labResult ?: LabResult.UNKNOWN
     }
 
+    @PostMapping("/{testId}/pair")
+    fun postTestPair(@PathVariable testId: String, @RequestBody testPairEvent: TestPairEvent): String {
+        log.info(">>>> postTestPair($testPairEvent)")
+        val testEntity = TestEntity(testId, testPairEvent.personId, LabResult.IN_PROGRESS)
+        testRepository.save(testEntity)
+        return "\"OK\""
+    }
+
     @PostMapping("/{testId}/result")
-    fun postResult(@PathVariable testId: String, @RequestBody resultEvent: TestResultEvent): String {
-        log.info(">>>> postResult($resultEvent)")
+    fun postTestResult(@PathVariable testId: String, @RequestBody testResultEvent: TestResultEvent): String {
+        log.info(">>>> postTestResult($testResultEvent)")
         return when (val testEntity = testRepository.findByIdOrNull(testId)) {
-            null -> "ERROR: testId = $testId not is not paired yet. Please scan again."
+            null -> "\"ERROR: testId = $testId not is not paired yet. Please scan again.\""
             else -> {
-                testEntity.labResult = resultEvent.labResult
+                testEntity.labResult = testResultEvent.labResult
                 testRepository.save(testEntity)
-                "OK"
+                "\"OK\""
             }
         }
     }
