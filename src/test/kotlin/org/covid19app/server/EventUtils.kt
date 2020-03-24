@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong
 private val idCounter = AtomicLong(0)
 
 fun freshId(prefix: String): String {
-    return "${prefix}${idCounter.incrementAndGet()}"
+    return "${prefix}:${idCounter.incrementAndGet()}"
 }
 
 fun freshEventInfo(deviceId: String): EventInfo {
