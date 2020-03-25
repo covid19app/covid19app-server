@@ -23,20 +23,22 @@ class PersonController(@Autowired val personRepository: PersonRepository) {
         }
     }
 
-    @PutMapping("/{personId}/profile")
-    fun putPersonProfile(@PathVariable personId: String, @RequestBody personProfileEvent: PersonProfileEvent) {
-        log.info(">>>> putPersonProfile($personProfileEvent)")
+    @PostMapping("/{personId}/profile")
+    fun postPersonProfile(@PathVariable personId: String, @RequestBody personProfileEvent: PersonProfileEvent): String {
+        log.info(">>>> postPersonProfile($personProfileEvent)")
 //        assert(personId == personProfileEvent.personId)
         val profileEntity = PersonEntity(personProfileEvent.personId, personProfileEvent.eventInfo.deviceId,
-                personProfileEvent.age, personProfileEvent.sex, personProfileEvent.name, personProfileEvent.deleted)
+                personProfileEvent.name, personProfileEvent.age, personProfileEvent.sex, personProfileEvent.deleted)
         personRepository.save(profileEntity)
+        return "\"OK\""
     }
 
-    @PutMapping("/{personId}/travelHistory")
-    fun putPersonTravelHistory(
-            @PathVariable personId: String, @RequestBody personTravelHistoryEvent: PersonTravelHistoryEvent) {
-        log.info(">>>> putPersonTravelHistory($personTravelHistoryEvent)")
+    @PostMapping("/{personId}/travelHistory")
+    fun postPersonTravelHistory(
+            @PathVariable personId: String, @RequestBody personTravelHistoryEvent: PersonTravelHistoryEvent): String {
+        log.info(">>>> postPersonTravelHistory($personTravelHistoryEvent)")
 //        assert(personId == personTravelHistoryEvent.personId)
+        return "\"OK\""
     }
 
     @PostMapping("/{personId}/symptoms")

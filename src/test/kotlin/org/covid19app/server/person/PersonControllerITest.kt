@@ -26,7 +26,7 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
 
         val personProfileEvent = PersonProfileEvent(freshEventInfo(),
                 personId, "John Doe", 42, Sex.NON_BINARY, false)
-        restTemplate.put("/v1/person/$personId/profile", personProfileEvent)
+        restTemplate.postForEntity<String>("/v1/person/$personId/profile", personProfileEvent)
 
         val registeredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
         assertThat(registeredResponse.statusCode).isEqualTo(HttpStatus.OK)
@@ -34,19 +34,19 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
-    fun putPersonProfile() {
+    fun postPersonProfile() {
         val personId = freshId("person")
         val personProfileEvent = PersonProfileEvent(freshEventInfo(),
                 personId, "John Doe", 42, Sex.NON_BINARY, false)
-        restTemplate.put("/v1/person/$personId/profile", personProfileEvent)
+        restTemplate.postForEntity<String>("/v1/person/$personId/profile", personProfileEvent)
     }
 
     @Test
-    fun putPersonTravelHistory() {
+    fun postPersonTravelHistory() {
         val personId = freshId("person")
         val personTravelHistoryEvent = PersonTravelHistoryEvent(freshEventInfo(), personId, "China",
                 listOf("Wuhan"), LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-31"))
-        restTemplate.put("/v1/person/$personId/travelHistory", personTravelHistoryEvent)
+        restTemplate.postForEntity<String>("/v1/person/$personId/travelHistory", personTravelHistoryEvent)
     }
 
     @Test

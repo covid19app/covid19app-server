@@ -23,12 +23,13 @@ class DeviceController(@Autowired val deviceRepository: DeviceRepository) {
         }
     }
 
-    @PutMapping("/{deviceId}/notification")
-    fun putDeviceNotification(
-            @PathVariable deviceId: String, @RequestBody deviceNotificationEvent: DeviceNotificationEvent) {
-        log.info(">>>> putDeviceNotification($deviceNotificationEvent)")
+    @PostMapping("/{deviceId}/notification")
+    fun postDeviceNotification(
+            @PathVariable deviceId: String, @RequestBody deviceNotificationEvent: DeviceNotificationEvent): String {
+        log.info(">>>> postDeviceNotification($deviceNotificationEvent)")
 //        assert(deviceId == deviceNotificationEvent.deviceId)
         val deviceEntity = DeviceEntity(deviceNotificationEvent.deviceId, deviceNotificationEvent.pushNotificationToken)
         deviceRepository.save(deviceEntity)
+        return "\"OK\""
     }
 }
