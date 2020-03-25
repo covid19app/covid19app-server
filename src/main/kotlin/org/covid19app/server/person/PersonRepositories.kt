@@ -9,9 +9,9 @@ data class PersonEntity(
         @Id
         val personId: String,
         val deviceId: String,
-        val age: Int,
-        val sex: Sex,
-        val name: String,
+        val name: String?,
+        val age: Int?,
+        val sex: Sex?,
         val deleted: Boolean
 )
 

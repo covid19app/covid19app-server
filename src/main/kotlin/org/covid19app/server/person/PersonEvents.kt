@@ -7,9 +7,9 @@ import java.time.LocalDate
 data class PersonProfileEvent(
         override val eventInfo: EventInfo,
         val personId: String,
-        val name: String,
-        val age: Int,
-        val sex: Sex,
+        val name: String?,
+        val age: Int?,
+        val sex: Sex?,
         val deleted: Boolean
 ): Event
 
