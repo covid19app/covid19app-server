@@ -28,7 +28,8 @@ class DeviceController(@Autowired val deviceRepository: DeviceRepository) {
             @PathVariable deviceId: String, @RequestBody deviceNotificationEvent: DeviceNotificationEvent): String {
         log.info(">>>> postDeviceNotification($deviceNotificationEvent)")
 //        assert(deviceId == deviceNotificationEvent.deviceId)
-        val deviceEntity = DeviceEntity(deviceNotificationEvent.deviceId, deviceNotificationEvent.pushNotificationToken)
+        val deviceEntity =
+                DeviceEntity(deviceNotificationEvent.deviceId, deviceNotificationEvent.pushNotificationToken, null)
         deviceRepository.save(deviceEntity)
         return "\"OK\""
     }
