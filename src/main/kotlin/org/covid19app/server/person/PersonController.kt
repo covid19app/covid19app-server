@@ -28,7 +28,8 @@ class PersonController(@Autowired val personRepository: PersonRepository) {
         log.info(">>>> postPersonProfile($personProfileEvent)")
 //        assert(personId == personProfileEvent.personId)
         val profileEntity = PersonEntity(personProfileEvent.personId, personProfileEvent.eventInfo.deviceId,
-                personProfileEvent.name, personProfileEvent.age, personProfileEvent.sex, personProfileEvent.deleted)
+                personProfileEvent.name, personProfileEvent.age, personProfileEvent.sex, personProfileEvent.locale,
+                personProfileEvent.deactivated)
         personRepository.save(profileEntity)
         return "\"OK\""
     }
@@ -47,13 +48,14 @@ class PersonController(@Autowired val personRepository: PersonRepository) {
         log.info(">>>> postPersonSymptoms($personSymptomsEvent)")
 //        assert(personId == personSymptomsEvent.personId)
         return if (personSymptomsEvent.feverInCelsius > 37.5) {
-            val link = "https://www.google.com/maps/search/?api=1&query=hospital"
-            val html = "<a style=\"font-size: 40px;\" href=\"$link\">Go to nearest lab please!</a>"
-            NextSteps(Action.GET_TESTED, html, link)
+            val externalLink = "https://www.google.com/maps/search/?api=1&query=hospital"
+            val externalLinkTitle = "Go to Lab!"
+            val html = "<a style=\"font-size: 40px;\" href=\"$externalLink\">Go to nearest lab please!</a>"
+            NextSteps(null, html, externalLink, externalLinkTitle)
         } else {
             val text = "There is no reason to be worried. Go on with your life. But please be careful!"
-            val html = "<p style=\"font-size: 40px;\">$text</p>"
-            NextSteps(Action.STAY_HEALTHY, html, null)
+//            val html = "<p style=\"font-size: 40px;\">$text</p>"
+            NextSteps(text, null, null, null)
         }
     }
 }

@@ -10,7 +10,8 @@ data class PersonProfileEvent(
         val name: String?,
         val age: Int?,
         val sex: Sex?,
-        val deleted: Boolean
+        val locale: String?,
+        val deactivated: Boolean?
 ): Event
 
 data class PersonTravelHistoryEvent(

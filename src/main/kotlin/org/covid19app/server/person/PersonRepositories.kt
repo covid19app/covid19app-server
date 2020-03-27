@@ -12,7 +12,8 @@ data class PersonEntity(
         val name: String?,
         val age: Int?,
         val sex: Sex?,
-        val deleted: Boolean
+        val locale: String?,
+        val deactivated: Boolean?
 )
 
 interface PersonRepository : JpaRepository<PersonEntity, String>

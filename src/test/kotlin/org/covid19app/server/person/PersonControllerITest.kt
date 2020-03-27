@@ -25,7 +25,7 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
         assertThat(notRegisteredResponse.body).isEqualTo("\"NOT_REGISTERED\"")
 
         val personProfileEvent = PersonProfileEvent(freshEventInfo(),
-                personId, "John Doe", 42, Sex.NON_BINARY, false)
+                personId, "John Doe", 42, Sex.NON_BINARY, "en-US", null)
         restTemplate.postForEntity<String>("/v1/person/$personId/profile", personProfileEvent)
 
         val registeredResponse = restTemplate.getForEntity<String>("/v1/person/$personId")
@@ -37,7 +37,7 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
     fun postPersonProfile() {
         val personId = freshId("person")
         val personProfileEvent = PersonProfileEvent(freshEventInfo(),
-                personId, "John Doe", 42, Sex.NON_BINARY, false)
+                personId, "John Doe", 42, Sex.NON_BINARY, "en-US", null)
         restTemplate.postForEntity<String>("/v1/person/$personId/profile", personProfileEvent)
     }
 
@@ -58,11 +58,11 @@ class PersonControllerITest(@Autowired val restTemplate: TestRestTemplate) {
         val goodSymptomsEvent = emptyPersonSymptomsEvent.copy(feverInCelsius = 37.0f)
         val goodResponse = restTemplate.postForEntity<NextSteps>("/v1/person/$personId/symptoms", goodSymptomsEvent)
         assertThat(goodResponse.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(goodResponse.body?.action).isEqualTo(Action.STAY_HEALTHY)
+        assertThat(goodResponse.body?.text).containsIgnoringCase("go on")
 
         val badSymptomsEvent = emptyPersonSymptomsEvent.copy(feverInCelsius = 38.0f)
         val badResponse = restTemplate.postForEntity<NextSteps>("/v1/person/$personId/symptoms", badSymptomsEvent)
         assertThat(badResponse.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(badResponse.body?.action).isEqualTo(Action.GET_TESTED)
+        assertThat(badResponse.body?.externalLinkTitle).isEqualTo("Go to Lab!")
     }
 }
